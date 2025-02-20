@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>菜单权限配置</title>
+    <script type="text/javascript" src="/static/js/jquery-3.6.0.min.js"></script>
+    <script>
+        function push(){
+            var role_ids = ""
+            for (var i=0; i<$(".role:checked").length;i++){
+                if (i == 0){
+                    role_ids += $(".role:checked")[i].getAttribute("value")
+                }else{
+                    role_ids += "," + $(".role:checked")[i].getAttribute("value")
+                }
+            }
+
+            var menu_ids = ""
+            for (var i=0; i<$(".menu:checked").length;i++){
+                if (i == 0){
+                    menu_ids += $(".menu:checked")[i].getAttribute("value")
+                }else{
+                    menu_ids += "," + $(".menu:checked")[i].getAttribute("value")
+                }
+            }
+            var data = {
+                role_ids:role_ids, menu_ids:menu_ids
+            }
+            $.post("/menu/menu_role_con", data,
+                function(result, state){
+                    alert(result)
+                    location.reload()
+                }
+            )
+
+        }
+        $(document).ready(function(){
+            $(".role").on("change", function(){
+                var len = $(".role:checked").length
+                if (len != 1){
+                    $(".menu").each(function() {
+                        $(this).prop("checked", false);
+                   })
+                }else{
+                    var role_id = $(".role:checked")[0].getAttribute("value")
+                    if (location.href.indexOf("=") > 0){
+                        location.href = location.href.split("=")[0] + "=" + role_id
+                    }else{
+                        location.href = location.href + "?role_id=" + role_id
+                    }
+                }
+            })
+        });
+
+    </script>
+</head>
+<body>
+    <div>
+        角色选择：<br/>
+        {% for each in roles %}
+        <input type="checkbox" value="{{each.id}}" class="role" {% if each.id==role_id %} checked {% endif %}/> {{each.name}}  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        {% endfor %}
+    </div>
+    <table>
+        <thead><th>菜单名</th><th>是否可用</th></thead>
+        <tbody>
+            {% for each in menu_list %}
+                {% if each.level == 0 %}
+                <tr class="{{each.parent_str}} father{{each.father_menu_id}}" style="background-color: red" id="{{each.id}}tr">
+                {% elif each.level == 1%}
+                <tr class="{{each.parent_str}} father{{each.father_menu_id}}" style="background-color: greenyellow" id="{{each.id}}tr">
+                {% elif each.level == 2%}
+                <tr class="{{each.parent_str}} father{{each.father_menu_id}}" style="background-color: cadetblue" id="{{each.id}}tr">
+                {% else %}
+                <tr class="{{each.parent_str}} father{{each.father_menu_id}}" style="background-color: gray" id="{{each.id}}tr">
+                {% endif %}
+                    <td>
+                        <input class="id" type="hidden" value="{{each.id}}"/>
+                        {% for i in range(each.level - 1) %}
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        {% endfor %}
+                        {% if each.level > 0 %}
+                        |--
+                        {% endif %}
+                        <input class="name" value="{{each.name}}"/>
+                    </td>
+                    <td>
+                        {% if each.children_num == 0 %}
+                            <input class="menu" type="checkbox" value="{{each.id}}" {% if each.boo %} checked {% endif %}/>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button onclick="push()">提交修改</button>
+</body>
+</html>

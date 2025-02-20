@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <script type="text/javascript" src="/static/js/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/myJSFuncs.js"></script>
+    <SCRIPT type="text/javascript">
+		<!--
+		var setting = {
+			view: {
+				fontCss: getFont,
+				nameIsHTML: true
+			},
+            data:{
+			    key:{
+			        title:"title"
+                }
+            }
+		};
+
+		var zNodes =[
+			{ name:"文档转换", id:1, pId:0, font:{'font-weight':'bold'} ,url:"http://www.baidu.com", target:"show_iframe", title:"123123"},
+			{ name:"斜体字", font:{'font-style':'italic'}},
+			{ name:"有背景的字", font:{'background-color':'black', 'color':'white'}},
+			{ name:"红色字", font:{'color':'red'}},
+			{ name:"蓝色字", font:{'color':'blue'}},
+			{ name:"<span style='color:blue;margin-right:0px;'>view</span>.<span style='color:red;margin-right:0px;'>nameIsHTML</span>"},
+			{ name:"zTree 默认样式"}
+		];
+
+		function getFont(treeId, node) {
+			return node.font ? node.font : {};
+		}
+
+		$(document).ready(function(){
+			$.fn.zTree.init($("#treeDemo"), setting, zNodes);
+		});
+		//-->
+	</SCRIPT>
+    <script>
+        function update_password(){
+            var pwd1 = $("iframe").contents().find("#pwd1").val();
+            var pwd2 = $("iframe").contents().find("#pwd2").val();
+            if (pwd1 != pwd2){
+                alert("两次输入密码不一致，请重新输入")
+            }else{
+                var data={new_password:pwd1}
+                $.post("/update_password", data, function(result, state){
+                    alert(result)
+                    location.reload()
+                })
+            }
+
+        }
+        function change_menu(menu_id){
+            var display = $('.'+menu_id).css('display')
+            if (display == "none"){
+                $('.' + menu_id).css('display','block');
+                $("#" + menu_id).text("收起")
+            }else{
+                $('.' + menu_id).css('display','none');
+                $("#" + menu_id).text("展开")
+            }
+
+
+        }
+        $(document).ready(function(){
+            if (location.href.indexOf("?") > 0) {
+                location.href = location.href.split("?")[0]
+            }
+        })
+    </script>
+</head>
+<body style="padding: 0px;margin: 0px">
+    <div style="width: 100%;border: 1px solid red;overflow: hidden;min-height: 1000px">
+        <div style="float: left;width: 15%;border: 1px solid blue;">
+            {% for each_father_menu in menu_list %}
+                <div style="margin-top: 5px;margin-left: 5px;border-bottom: 1px solid black">
+                    <!-该层的数据都是展示用而不是实际点击用-->
+                    <div>
+                        {% if each_father_menu.menu.type == '0' %}
+                        {{each_father_menu.menu.name}}
+                        {% endif %}
+                        {% if each_father_menu.menu.type == '1' %}
+                        <a href="{{each_father_menu.menu.url}}"  target="show_iframe">{{each_father_menu.menu.name}}</a>
+                        {% endif %}
+                        {% if each_father_menu.menu.type == '2' %}
+                        <a href="{{each_father_menu.menu.url}}"  target="_blank">{{each_father_menu.menu.name}}</a>
+                        {% endif %}
+                        {% if each_father_menu.children %}
+                        &nbsp;&nbsp;<a id="{{each_father_menu.menu.id}}" href="javascript:change_menu('{{each_father_menu.menu.id}}')">收起</a>
+                        {% endif %}
+                    </div>
+                    <div>
+                        {{each_father_menu.menu.describe}}
+                    </div>
+                </div>
+                {% for each_menu in each_father_menu.children %}
+                    <div class="{{each_father_menu.menu.id}}" style="margin-top: 5px;margin-left: 15px;border-bottom: 1px solid red;border-left: 1px solid red;">
+                        <!-该层的数据不确定类型-->
+                        <div>
+                            {% if each_menu.menu.type == '0' %}
+                            {{each_menu.menu.name}}
+                            {% endif %}
+                            {% if each_menu.menu.type == '1' %}
+                            <a href="{{each_menu.menu.url}}"  target="show_iframe">{{each_menu.menu.name}}</a>
+                            {% endif %}
+                            {% if each_menu.menu.type == '2' %}
+                            <a href="{{each_menu.menu.url}}"  target="_blank">{{each_menu.menu.name}}</a>
+                            {% endif %}
+                            {% if each_menu.children %}
+                            &nbsp;&nbsp;<a id="{{each_menu.menu.id}}" href="javascript:change_menu('{{each_menu.menu.id}}')">收起</a>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {{each_menu.menu.describe}}
+                        </div>
+                    </div>
+                    {% for each_children in each_menu.children %}
+                        <div class="{{each_menu.menu.id}} {{each_father_menu.menu.id}}" style="margin-top: 5px;margin-left: 25px;border-bottom: 1px solid blue;border-left: 1px solid blue;">
+                            <!-该层的数据不确定类型-->
+                            <div>
+                                {% if each_children.menu.type == '0' %}
+                                {{each_children.menu.name}}
+                                {% endif %}
+                                {% if each_children.menu.type == '1' %}
+                                <a href="{{each_children.menu.url}}"  target="show_iframe">{{each_children.menu.name}}</a>
+                                {% endif %}
+                                {% if each_children.menu.type == '2' %}
+                                <a href="{{each_children.menu.url}}"  target="_blank">{{each_children.menu.name}}</a>
+                                {% endif %}
+                            </div>
+                            <div>
+                                {{each_children.menu.describe}}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+        <div style="float: right;width: 84%;border: 1px solid green;height: 22px;text-align: right;padding:0px 0px 0px 0px;">
+            <span style="font-size: 20px">今天是{{now_time}}</span>&nbsp;&nbsp;&nbsp;
+            <span style="font-size: 20px">你好,{{show_name}}</span>&nbsp;&nbsp;&nbsp;
+            <a href="javascript:alertFrame('/update_password','取消修改', '提交修改', 'update_password')">修改密码</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        </div>
+        <div style="float: right;width: 84%;border: 1px solid green;min-height: 990px">
+            <iframe name="show_iframe" width="100%" style="min-height: 990px" src="/show"></iframe>
+        </div>
+    </div>
+
+</body>
+</html>

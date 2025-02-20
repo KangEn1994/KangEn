@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>日志列表</title>
+    <script type="text/javascript" src="/static/js/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/myJSFuncs.js"></script>
+    <script type="text/javascript" src="/static/js/select2.min.js"></script>
+    <link href="/static/css/select2.min.css" rel="stylesheet" />
+
+    <script>
+        function search(){
+            var type = $("#type").val()
+            var title = $("#title").val()
+            var page_num = $("#page_num").val()
+            var page_size = $("#page_size").val()
+            if (location.href.indexOf("?") > 0){
+                location.href = location.href.split("?")[0] + "?type=" + type + "&page_num=" + page_num + "&page_size=" + page_size + "&title=" + title
+            }else{
+                location.href = location.href + "?type=" + type + "&page_num=" + page_num + "&page_size=" + page_size + "&title=" + title
+            }
+        }
+        $(document).ready(function () {//加载页面时执行select2
+            $('.singleSelect').select2();
+          });
+    </script>
+</head>
+<body>
+    <label>类型：</label>
+    <select id="type" class="singleSelect" style="width: 200px">
+        <option value="0">定时任务日志</option>
+    </select>
+    <label>任务标题：<input id="title" value="{{title}}"/></label>
+    <label>当前页码：</label>第<input id="page_num" value="{{page_num}}"/>/{{page_total}}页
+    <label>单页显示：</label><input id="page_size" value="{{page_size}}"/>条数据
+    <label></label><button onclick="search()">点击查询</button>
+    <p></p>
+    <table border="1px solid black" cellspacing=0>
+        <thead>
+            <th>id</th><th width="100px">日志主题</th><th>日志详情</th><th width="100px">发生时间</th>
+        </thead>
+        <tbody>
+            {% for each in log_list %}
+                <tr>
+                    <td>{{each.id}}</td>
+                    <td>{{each.title}}</td>
+                    <td>{{each.describe}}</td>
+                    <td>{{each.create_time}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

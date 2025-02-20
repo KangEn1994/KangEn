@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>角色列表</title>
+    <script type="text/javascript" src="/static/js/jquery-3.6.0.min.js"></script>
+    <script>
+        function update_role(role_id){
+            var name = $("#" + role_id + "_name").val()
+            var describe = $("#" + role_id + "_describe").val()
+            var data = {role_id:role_id, name: name, describe:describe, way:"update"}
+            $.post("/role/role", data, function(result, state){
+                    alert(result)
+                    location.reload()
+            })
+        }
+
+        function delete_role(role_id){
+            var data = {role_id: role_id, way:"delete"}
+            $.post("/role/role", data, function(result, state){
+                    alert(result)
+                    location.reload()
+            })
+        }
+
+        function add_role(){
+            var name = $("#name").val()
+            var describe = $("#describe").val()
+            var data ={
+                name:name, describe:describe, way:"add"
+            }
+            $.post("/role/role", data, function(result, state){
+                    alert(result)
+                    location.reload()
+            })
+        }
+    </script>
+</head>
+<body>
+    <table border="1px solid black" cellspacing=0>
+        <thead>
+            <th>id</th><th>角色名</th><th>角色介绍</th><th>操作</th>
+        </thead>
+        <tbody>
+            {% for each in role_list %}
+                <tr id="{{each.id}}tr">
+                    <td>{{each.id}}</td>
+                    <td><input id="{{each.id}}_name" value="{{each.name}}"/></td>
+                    <td><input id="{{each.id}}_describe" value="{{each.describe}}"/></td>
+                    <td>
+                        <button onclick="update_role('{{each.id}}')">提交修改</button>
+                        <button onclick="delete_role('{{each.id}}')">删除该角色</button>
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td>新增项</td>
+                <td><input id='name' value=''/></td>
+                <td><input id='describe' value=''/></td>
+                <td><button onclick="add_role()">确认新增</button></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

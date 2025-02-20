@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>股票数据可视化</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        #stockChart {
+            width: 100%;
+            height: 600px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .search-box {
+            margin-bottom: 20px;
+        }
+        input {
+            padding: 8px;
+            font-size: 16px;
+            width: 200px;
+        }
+        button {
+            padding: 8px 16px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="search-box">
+            <input type="text" id="stockCode" placeholder="输入股票代码">
+            <button onclick="fetchStockData()">查询</button>
+        </div>
+        <div id="stockChart"></div>
+    </div>
+
+    <script>
+        const chart = echarts.init(document.getElementById('stockChart'));
+
+        function fetchStockData() {
+            const code = document.getElementById('stockCode').value;
+            if (!code) {
+                alert('请输入股票代码');
+                return;
+            }
+
+            fetch(`/api/stock-data/${code}`)
+                .then(response => response.json())
+                .then(data => {
+                    const chartData = data.map(item => ([
+                        item.date,
+                        item.open,
+                        item.close,
+                        item.low,
+                        item.high,
+                        item.volume
+                    ]));
+
+                    const option = {
+                        title: {
+                            text: `股票${code}日K线图`,
+                            left: 'center'
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'cross'
+                            }
+                        },
+                        legend: {
+                            data: ['日K', '成交量'],
+                            top: '30px'
+                        },
+                        grid: [
+                            {
+                                left: '10%',
+                                right: '10%',
+                                height: '60%'
+                            },
+                            {
+                                left: '10%',
+                                right: '10%',
+                                top: '75%',
+                                height: '15%'
+                            }
+                        ],
+                        xAxis: [
+                            {
+                                type: 'category',
+                                data: chartData.map(item => item[0]),
+                                scale: true,
+                                boundaryGap: false,
+                                axisLine: {onZero: false},
+                                splitLine: {show: false},
+                                splitNumber: 20
+                            },
+                            {
+                                type: 'category',
+                                gridIndex: 1,
+                                data: chartData.map(item => item[0]),
+                                scale: true,
+                                boundaryGap: false,
+                                axisLine: {onZero: false},
+                                axisTick: {show: false},
+                                splitLine: {show: false},
+                                axisLabel: {show: false},
+                                splitNumber: 20
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                scale: true,
+                                splitArea: {
+                                    show: true
+                                }
+                            },
+                            {
+                                scale: true,
+                                gridIndex: 1,
+                                splitNumber: 2,
+                                axisLabel: {show: false},
+                                axisLine: {show: false},
+                                axisTick: {show: false},
+                                splitLine: {show: false}
+                            }
+                        ],
+                        dataZoom: [
+                            {
+                                type: 'inside',
+                                xAxisIndex: [0, 1],
+                                start: 50,
+                                end: 100
+                            },
+                            {
+                                show: true,
+                                xAxisIndex: [0, 1],
+                                type: 'slider',
+                                bottom: '0%',
+                                start: 50,
+                                end: 100
+                            }
+                        ],
+                        series: [
+                            {
+                                name: '日K',
+                                type: 'candlestick',
+                                data: chartData.map(item => [
+                                    item[1],
+                                    item[2],
+                                    item[3],
+                                    item[4]
+                                ])
+                            },
+                            {
+                                name: '成交量',
+                                type: 'bar',
+                                xAxisIndex: 1,
+                                yAxisIndex: 1,
+                                data: chartData.map(item => item[5])
+                            }
+                        ]
+                    };
+
+                    chart.setOption(option);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('获取数据失败');
+                });
+        }
+
+        window.addEventListener('resize', () => chart.resize());
+    </script>
+</body>
+</html>

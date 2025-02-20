@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>菜单列表</title>
+    <script type="text/javascript" src="/static/js/jquery-3.6.0.min.js"></script>
+    <script>
+        function hide_children(menu_id){
+            $("." + menu_id).hide()
+            $("#" + menu_id + "hide").hide()
+            $("#" + menu_id + "show").show()
+        }
+        function show_children(menu_id){
+            $(".father" + menu_id).show()
+            $("#" + menu_id + "show").hide()
+            $("#" + menu_id + "hide").show()
+        }
+        function  add_children(menu_id){
+            var html = '<tr>' +
+                '<td><input id="add_parent_id" type="hidden" value="' + menu_id + '"/><input id="add_name" value=""/></td>' +
+                '<td><input id="add_describe" value=""/></td>' +
+                '<td><input id="add_type" value="1"/></td>' +
+                '<td><input id="add_url" value=""/></td>' +
+                '<td><input id="add_index" value="0"/></td>' +
+                '<td><button onClick="push_children()">确认增加</button></td>' +
+                '</tr>'
+            $("#" + menu_id + "tr").after(html)
+        }
+
+        function push_children(){
+            var parent_id = $("#add_parent_id").val()
+            var name = $("#add_name").val()
+            var describe = $("#add_describe").val()
+            var type = $("#add_type").val()
+            var url = $("#add_url").val()
+            var index = $("#add_index").val()
+            var data = {
+                parent_id:parent_id, name:name, describe:describe, type:type, url:url, index:index,way:"add"
+            }
+            $.post("/menu/menu",
+                data,
+                function(result, state){
+                    alert(result)
+                    location.reload()
+                })
+        }
+
+        function delete_menu(menu_id){
+            var data = {
+                id:menu_id, way:"del"
+            }
+            $.post("/menu/menu",
+                data,
+                function(result, state){
+                    alert(result)
+                    location.reload()
+                })
+        }
+
+        function update_menu(menu_id){
+            var tr = $("#" + menu_id + "tr")
+            var name = $($("#" + menu_id + "tr .name")[0]).val()
+            var describe = $($("#" + menu_id + "tr .describe")[0]).val()
+            var type = $($("#" + menu_id + "tr .type")[0]).val()
+            var url = $($("#" + menu_id + "tr .url")[0]).val()
+            var index = $($("#" + menu_id + "tr .index")[0]).val()
+            var data = {
+                menu_id:menu_id, name:name, describe:describe, type:type, url:url, index:index,way:"update"
+            }
+            $.post("/menu/menu",
+                data,
+                function(result, state){
+                    alert(result)
+                    location.reload()
+                })
+        }
+    </script>
+</head>
+<body>
+    <table>
+        <thead>
+            <th>菜单名</th><th>菜单描述</th><th>菜单类型</th><th>路由</th><th>展示顺序</th>
+            <th>操作<button onclick="add_children('1')" id="1add">新增子菜单</button></th>
+        </thead>
+        <tbody>
+
+            {% for each in menu_list %}
+                {% if each.level == 0 %}
+                <tr class="{{each.parent_str}} father{{each.father_menu_id}}" style="background-color: red" id="{{each.id}}tr">
+                {% elif each.level == 1%}
+                <tr class="{{each.parent_str}} father{{each.father_menu_id}}" style="background-color: greenyellow" id="{{each.id}}tr">
+                {% elif each.level == 2%}
+                <tr class="{{each.parent_str}} father{{each.father_menu_id}}" style="background-color: cadetblue" id="{{each.id}}tr">
+                {% else %}
+                <tr class="{{each.parent_str}} father{{each.father_menu_id}}" style="background-color: gray" id="{{each.id}}tr">
+                {% endif %}
+                    <td>
+                        <input class="id" type="hidden" value="{{each.id}}"/>
+                        {% for i in range(each.level - 1) %}
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        {% endfor %}
+                        {% if each.level > 0 %}
+                        |--
+                        {% endif %}
+                        <input class="name" value="{{each.name}}"/>
+                    </td>
+                    <td>
+                        <input class="describe" value="{{each.describe}}"/>
+                    </td>
+                    <td>
+                        <input class="type" value="{{each.type}}"/>
+                    </td>
+                    <td>
+                        <input class="url" value="{{each.url}}"/>
+                    </td>
+                    <td>
+                        <input class="index" value="{{each.index}}"/>
+                    </td>
+                    <td>
+                        {% if each.children_num > 0 %}
+                            <button onclick="hide_children('{{each.id}}')" id="{{each.id}}hide">隐藏子菜单</button>
+                            <button onclick="show_children('{{each.id}}')" id="{{each.id}}show" style="display: none">展示子菜单</button>
+                        {% endif %}
+                        <button onclick="add_children('{{each.id}}')" id="{{each.id}}add">新增子菜单</button>
+                        <button onclick="delete_menu('{{each.id}}')" id="{{each.id}}del">删除该菜单</button>
+                        <button onclick="update_menu('{{each.id}}')" id="{{each.id}}update">提交修改</button>
+                    </td>
+                </tr>
+
+            {% endfor %}
+            <tr id="1tr" style="display: none"></tr>
+        </tbody>
+    </table>
+</body>
+</html>

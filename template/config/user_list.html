@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户列表</title>
+    <script type="text/javascript" src="/static/js/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/select2.min.js"></script>
+    <link href="/static/css/select2.min.css" rel="stylesheet" />
+    <script>
+        function update_user(user_id){
+            var new_password = $("#" + user_id + "pass").val()
+            var remark = $("#" + user_id + "remark").val()
+            var data = {user_id:user_id, password: new_password, remark:remark, way:"update"}
+            $.post("/config/user", data, function(result, state){
+                    alert(result)
+                    location.reload()
+            })
+        }
+
+        function delete_user(user_id){
+            var data = {user_id: user_id, way:"delete"}
+            $.post("/config/user", data, function(result, state){
+                    alert(result)
+                    location.reload()
+            })
+        }
+
+        function add_user(){
+            var show_name = $("#show_name").val()
+            var login_name = $("#login_name").val()
+            var password = $("#password").val()
+            var data ={
+                show_name:show_name, login_name:login_name, password:password, way:"add"
+            }
+            $.post("/config/user", data, function(result, state){
+                    alert(result)
+                    location.reload()
+            })
+        };
+        $(document).ready(function () {//加载页面时执行select2
+            $('.singleSelect').select2();
+          });
+    </script>
+</head>
+<body>
+    <table border="1px solid black" cellspacing=0>
+        <thead>
+            <th>id</th><th>展示名</th><th>登录名</th><th>密码</th><th>操作</th>
+        </thead>
+        <tbody>
+            {% for each in user_list %}
+                <tr id="{{each.id}}tr">
+                    <td>{{each.id}}</td>
+                    <td>{{each.show_name}}</td>
+                    <td>{{each.login_name}}</td>
+                    <td><input id="{{each.id}}pass" value="{{each.password}}"/></td>
+                    <td>
+                        <button onclick="update_user('{{each.id}}')">提交修改</button>
+                        <button onclick="delete_user('{{each.id}}')">删除该用户</button>
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td>新增项</td>
+                <td><input id='show_name' value=''/></td>
+                <td><input id='login_name' value=''/></td>
+                <td><input id='password' value=''/></td>
+                <td><button onclick="add_user()">确认新增</button></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

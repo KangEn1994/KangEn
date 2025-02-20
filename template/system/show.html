@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <script type="text/javascript" src="/static/js/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.ztree.core.js"></script>
+    <SCRIPT type="text/javascript">
+		<!--
+		var setting = {
+			view: {
+				fontCss: getFont,
+				nameIsHTML: true
+			},
+            data:{
+			    key:{
+			        title:"title"
+                }
+            }
+		};
+
+		var zNodes =[
+			{ name:"文档转换", id:1, pId:0, font:{'font-weight':'bold'} ,url:"http://www.baidu.com", target:"show_iframe", title:"123123"},
+			{ name:"斜体字", font:{'font-style':'italic'}},
+			{ name:"有背景的字", font:{'background-color':'black', 'color':'white'}},
+			{ name:"红色字", font:{'color':'red'}},
+			{ name:"蓝色字", font:{'color':'blue'}},
+			{ name:"<span style='color:blue;margin-right:0px;'>view</span>.<span style='color:red;margin-right:0px;'>nameIsHTML</span>"},
+			{ name:"zTree 默认样式"}
+		];
+
+		function getFont(treeId, node) {
+			return node.font ? node.font : {};
+		}
+
+		$(document).ready(function(){
+			$.fn.zTree.init($("#treeDemo"), setting, zNodes);
+		});
+		//-->
+	</SCRIPT>
+</head>
+<body style="padding: 0px;margin: 0px;text-align: center">
+    <span style="font-size: 50px">今天是{{now_time}}</span>
+    <br/>
+    <span style="font-size: 50px">你好,{{show_name}}</span>
+
+
+</body>
+</html>

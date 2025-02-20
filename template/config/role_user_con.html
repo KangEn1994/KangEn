@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>角色人员配置</title>
+    <script type="text/javascript" src="/static/js/jquery-3.6.0.min.js"></script>
+    <script>
+        function push(){
+            var user_names = ""
+            for (var i=0; i<$(".user:checked").length;i++){
+                if (i == 0){
+                    user_names += $(".user:checked")[i].getAttribute("value")
+                }else{
+                    user_names += "," + $(".user:checked")[i].getAttribute("value")
+                }
+            }
+
+            var role_ids = ""
+            for (var i=0; i<$(".role:checked").length;i++){
+                if (i == 0){
+                    role_ids += $(".role:checked")[i].getAttribute("value")
+                }else{
+                    role_ids += "," + $(".role:checked")[i].getAttribute("value")
+                }
+            }
+            var data = {
+                user_names:user_names, role_ids:role_ids
+            }
+            $.post("/role/role_user_con", data,
+                function(result, state){
+                    alert(result)
+                    location.reload()
+                }
+            )
+
+        }
+        $(document).ready(function(){
+            $(".user").on("change", function(){
+                var len = $(".user:checked").length
+                if (len != 1){
+                    $(".role").each(function() {
+                        $(this).prop("checked", false);
+                   })
+                }else{
+                    var username = $(".user:checked")[0].getAttribute("value")
+                    if (location.href.indexOf("=") > 0){
+                        location.href = location.href.split("=")[0] + "=" + username
+                    }else{
+                        location.href = location.href + "?username=" + username
+                    }
+                }
+            })
+        });
+
+    </script>
+</head>
+<body>
+    <div>
+        人员选择：<br/>
+        {% for each in users %}
+        <input type="checkbox" value="{{each.login_name}}" class="user" {% if user.id==each.id %} checked {% endif %}/> {{each.show_name}}  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        {% endfor %}
+    </div>
+    <table>
+        <thead><th>角色名</th><th>说明</th><th>是否匹配该角色</th></thead>
+        <tbody>
+            {% for each in role_list %}
+                <tr id="{{each.id}}tr">
+                    <td>
+                        <input class="id" type="hidden" value="{{each.id}}"/>
+                        <input class="name" value="{{each.name}}"/>
+                    </td>
+                    <td>
+                        <input class="describe" value="{{each.describe}}"/>
+                    </td>
+                    <td>
+                        <input class="role" type="checkbox" value="{{each.id}}" {% if each.boo %} checked {% endif %}/>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button onclick="push()">提交修改</button>
+</body>
+</html>

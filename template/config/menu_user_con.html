@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>菜单权限配置</title>
+    <script type="text/javascript" src="/static/js/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".user").on("change", function(){
+                var len = $(".user:checked").length
+                if (len != 1){
+                    $(".menu").each(function() {
+                        $(this).prop("checked", false);
+                   })
+                }else{
+                    var username = $(".user:checked")[0].getAttribute("value")
+                    if (location.href.indexOf("=") > 0){
+                        location.href = location.href.split("=")[0] + "=" + username
+                    }else{
+                        location.href = location.href + "?username=" + username
+                    }
+                }
+            })
+        });
+
+    </script>
+</head>
+<body>
+    <div>
+        人员选择：<br/>
+        {% for each in users %}
+        <input type="checkbox" value="{{each.login_name}}" class="user" {% if username==each.login_name %} checked {% endif %}/> {{each.show_name}}  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        {% endfor %}
+    </div>
+    <table>
+        <thead><th>菜单名</th><th>是否可用</th></thead>
+        <tbody>
+            {% for each in menu_list %}
+                {% if each.level == 0 %}
+                <tr class="{{each.parent_str}} father{{each.father_menu_id}}" style="background-color: red" id="{{each.id}}tr">
+                {% elif each.level == 1%}
+                <tr class="{{each.parent_str}} father{{each.father_menu_id}}" style="background-color: greenyellow" id="{{each.id}}tr">
+                {% elif each.level == 2%}
+                <tr class="{{each.parent_str}} father{{each.father_menu_id}}" style="background-color: cadetblue" id="{{each.id}}tr">
+                {% else %}
+                <tr class="{{each.parent_str}} father{{each.father_menu_id}}" style="background-color: gray" id="{{each.id}}tr">
+                {% endif %}
+                    <td>
+                        <input class="id" type="hidden" value="{{each.id}}"/>
+                        {% for i in range(each.level - 1) %}
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        {% endfor %}
+                        {% if each.level > 0 %}
+                        |--
+                        {% endif %}
+                        <input class="name" value="{{each.name}}"/>
+                    </td>
+                    <td>
+                        {% if each.children_num == 0 %}
+                            <input class="menu" type="checkbox" value="{{each.id}}" {% if each.boo %} checked {% endif %} disabled/>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
