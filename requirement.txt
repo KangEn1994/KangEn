@@ -5,3 +5,7 @@ PyMySQL==1.0.2
 cryptography==36.0.1
 APScheduler==3.10.4
 Flask-APScheduler==1.13.0
+tushare==1.4.19
+lark_oapi
+pycups
+reportlab

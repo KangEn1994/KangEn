@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>生成器</title>
+    <script type="text/javascript" src="/static/js/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        button { margin-right: 10px; padding: 8px 16px; }
+        textarea { width: 100%; height: 200px; margin-top: 20px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <button id="genName" onclick="get_data(1)">生成姓名</button>
+    <button id="genThing" onclick="get_data(2)">生成物品</button>
+    <br>
+    <textarea id="output" placeholder="生成内容会显示在这里" wrap="soft"></textarea>
+
+    <script>
+        function get_data(way) {
+            $('#output').val('');
+
+            // alert(way)
+            // $.ajax({
+            //     url: '/novel/name',
+            //     type: 'POST',
+            //     contentType: 'application/json',
+            //     data: {way: way },
+            //     success: function(data) {
+            //         textarea.val(data.data);
+            //     },
+            // });
+
+            var data ={
+                way: way 
+            }
+            $.post("/novel/name", data, function(result, state){
+                $('#output').val(result);
+            })
+        }
+        $(document).ready(function() {
+            
+        });
+        
+    </script>
+</body>
+</html>
