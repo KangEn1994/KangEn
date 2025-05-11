@@ -2,3 +2,6 @@
 .idea/*
 *.pyc
 conf/conf_bak.py
+conf/conf.py
+.venv
+.vscode
