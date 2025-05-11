@@ -24,7 +24,7 @@ class IndexControl(BaseControl):
         now_time_str += "  " + get_xingqiji_by_datetime(now_time)
 
         # 虽然之前的菜单设计都是不限制层数的，但是这里为了前端着想，设定只会存在两层的菜单结构
-        return render_template("system/stock.html", menu_list=menu_tree.children, show_name=show_name, now_time=now_time_str)
+        return render_template("system/index.html", menu_list=menu_tree.children, show_name=show_name, now_time=now_time_str)
 
 
 class ShowIndexControl(BaseControl):

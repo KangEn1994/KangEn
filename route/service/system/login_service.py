@@ -3,7 +3,7 @@
 # author: uncleyiba@qq.com
 # datetime:2022/2/7
 import os, sys, re, json, traceback, time, hashlib
-from route.entity.user import User
+from route.entity.system.user import User
 from route.service.database.sql_pool import SqlPool
 from sqlalchemy import and_
 from conf.conf import SALT, FERNET_KEY

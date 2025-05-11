@@ -3,14 +3,14 @@
 # author: uncleyiba@qq.com
 # datetime:2022/2/7
 import os, sys, re, json, traceback, time, datetime
-from route.entity.menu import Menu, MenuTree
-from route.entity.menu_user_con import MenuUserCon
+from route.entity.system.menu import Menu, MenuTree
+from route.entity.system.menu_user_con import MenuUserCon
 from route.entity.system.menu_role_con import MenuRoleCon
 from route.service.database.sql_pool import SqlPool
 from tools.utils.simple_utils import get_uuid
 from route.service.system.login_service import LoginService, User
 from route.service.config.role_service import RoleService, Role
-from route.entity.role_user_con import RoleUserCon
+from route.entity.system.role_user_con import RoleUserCon
 
 class MenuService:
     @staticmethod

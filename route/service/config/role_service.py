@@ -4,10 +4,10 @@
 # datetime:2022/2/14
 import os, sys, re, json, traceback, time, datetime
 from route.service.database.sql_pool import SqlPool
-from route.entity.role import Role
-from route.entity.user import User
+from route.entity.system.role import Role
+from route.entity.system.user import User
 from tools.utils.simple_utils import get_uuid
-from route.entity.role_user_con import RoleUserCon
+from route.entity.system.role_user_con import RoleUserCon
 from route.service.system.login_service import LoginService
 
 

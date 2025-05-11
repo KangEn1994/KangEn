@@ -55,7 +55,13 @@
                 return;
             }
 
-            fetch(`/api/stock-data/${code}`)
+            fetch(`/stock/stock/${code}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ code: code })
+            })
                 .then(response => response.json())
                 .then(data => {
                     const chartData = data.map(item => ([
@@ -76,6 +82,25 @@
                             trigger: 'axis',
                             axisPointer: {
                                 type: 'cross'
+                            },
+                            formatter: function (params) {
+                                const date = params[0].axisValue;
+                                let result = ['日期: ' + date];
+
+                                // 遍历所有数据系列
+                                params.forEach(param => {
+                                    if (param.seriesName === '日K') {
+                                        const data = param.data;
+                                        result.push('开盘价: ' + data[0]);
+                                        result.push('收盘价: ' + data[1]);
+                                        result.push('最低价: ' + data[2]);
+                                        result.push('最高价: ' + data[3]);
+                                    } else if (param.seriesName === '成交量') {
+                                        result.push('成交量: ' + param.data);
+                                    }
+                                });
+
+                                return result.join('<br/>');
                             }
                         },
                         legend: {
@@ -159,7 +184,9 @@
                                     item[1],
                                     item[2],
                                     item[3],
-                                    item[4]
+                                    item[4],
+                                    item[5]
+
                                 ])
                             },
                             {

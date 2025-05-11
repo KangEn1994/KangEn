@@ -3,8 +3,8 @@
 # author: uncleyiba@qq.com
 # datetime:2022/2/8
 import os, sys, re, json, traceback, time, datetime
-from route.entity.user import User
-from route.entity.role_user_con import RoleUserCon
+from route.entity.system.user import User
+from route.entity.system.role_user_con import RoleUserCon
 from route.service.database.sql_pool import SqlPool
 from tools.utils.simple_utils import get_uuid
 

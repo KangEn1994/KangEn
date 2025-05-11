@@ -7,7 +7,7 @@ from sqlalchemy import Column, String, Integer, Text, DateTime, Float
 from route.entity.base import Base
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-from route.entity.role import Role
+from route.entity.system.role import Role
 
 
 class MenuRoleCon(Base):

@@ -5,7 +5,6 @@
 from route.control.base_control import BaseControl
 from flask import render_template, request, session
 from route.service.config.user_service import UserService
-from route.service.redmine.redmine_user_service import RedmineUserService
 
 class UserControl(BaseControl):
     def get(self):

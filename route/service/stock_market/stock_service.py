@@ -4,9 +4,10 @@
 # datetime:2022/2/11
 import datetime
 from route.service.database.sql_pool import SqlPool
-from route.entity.stock_market.stock_daily import Stock
+from route.entity.stock_market.stock_daily import StockDaily
 from tools.utils.simple_utils import get_uuid
 import tushare as ts
+from conf.conf import TUSHARE_TOKEN
 
 class StockService:
     # @staticmethod
@@ -36,7 +37,7 @@ class StockService:
     @staticmethod
     def add(ts_code, trade_date, open, high, low, close, pre_close, change, pct_chg, vol, amount):
         # session = SqlPool.get_session()
-        stock = Stock(id=get_uuid(), ts_code=ts_code, trade_date=trade_date, open=open, high=high, low=low, close=close, pre_close=pre_close, change=change, pct_chg=pct_chg, vol=vol, amount=amount,
+        stock = StockDaily(id=get_uuid(), ts_code=ts_code, trade_date=trade_date, open=open, high=high, low=low, close=close, pre_close=pre_close, change=change, pct_chg=pct_chg, vol=vol, amount=amount,
                       create_by="1", update_by="1")
         return stock
         # session.add(stock)
@@ -70,8 +71,31 @@ class StockService:
     #         return False
 
     @staticmethod
+    def get_qfq_data(code):
+        """
+                #     'date': item.trade_date,
+        #     'open': item.open,
+        #     'high': item.high,
+        #     'low': item.low,
+        #     'close': item.close,
+        #     'volume': item.vol
+        :param code:
+        :return:
+        """
+        ts.set_token(TUSHARE_TOKEN)
+        pro = ts.pro_api()
+        day_str = datetime.datetime.now().strftime("%Y%m%d")
+        df = ts.pro_bar(ts_code=code, adj='qfq', start_date='19900101', end_date=day_str)
+        r = []
+        line, col = df.shape
+        for i in range(line):
+            e = df.loc[i]
+            r.insert(0, dict(date=e["trade_date"], open=e["open"], high=e["high"], low=e["low"], close=e["close"], volume=e["vol"]))
+        return r
+
+    @staticmethod
     def upload_data(trade_date):
-        ts.set_token("0d73170379cee6deba360da0ce165989dcb1b81790c1e007890b0de6")
+        ts.set_token(TUSHARE_TOKEN)
         pro = ts.pro_api()
         now = datetime.datetime.strptime("20250219", "%Y%m%d")
         day = now - datetime.timedelta(days=0)
@@ -92,7 +116,7 @@ class StockService:
             s.append(dict(e))
             if len(s) == 1000 or j + 1 == row:
                 session = SqlPool.get_session()
-                row_count = session.bulk_insert_mappings(Stock, s)
+                row_count = session.bulk_insert_mappings(StockDaily, s)
                 # stock = Stock(id=get_uuid(), ts_code=ts_code, trade_date=trade_date, open=open, high=high, low=low,
                 #               close=close, pre_close=pre_close, change=change, pct_chg=pct_chg, vol=vol, amount=amount,
                 #               create_by="1", update_by="1")
@@ -102,18 +126,28 @@ class StockService:
                 s = []
 
     @staticmethod
-    def test(code):
+    def get_daily_data(code):
         try:
             session = SqlPool.get_session()
-            data = session.query(Stock).filter(Stock.ts_code == code).order_by(Stock.trade_date).all()
-            print(data)
+            data = session.query(StockDaily).filter(StockDaily.ts_code == code).order_by(StockDaily.trade_date).all()
+            # print(data)
             session.close()
             return data
         except:
             return False
 
 if __name__ == "__main__":
-    StockService.test()
+    ts.set_token(TUSHARE_TOKEN)
+    pro = ts.pro_api()
+    day_str = datetime.datetime.now().strftime("%Y%m%d")
+    df = ts.pro_bar(ts_code="688256.SH", adj='qfq', start_date='19900101', end_date=day_str)
+
+    line, col = df.shape
+    for i in range(10, line):
+        e = df.loc[i]
+        e2 = df.loc[i - 10]
+        if e["pct_chg"] > 19:
+            print(f"交易日{e['trade_date']}, 开盘价{e['open']}，收盘价{e['close']}，涨跌幅{e['pct_chg']}，10日后收盘价{e2['close']}")
 
 
 
