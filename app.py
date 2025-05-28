@@ -72,6 +72,9 @@ def out_html(data, code, headers=None):
 def js_file(path):
     return send_file('template/js/{0}'.format(path))
 
+@app.route('/static/doc/<path:path>', methods=['GET'])
+def doc_file(path):
+    return send_file('doc/{0}'.format(path))
 
 @app.route('/static/css/<path:path>', methods=['GET'])
 def css_file(path):
@@ -158,6 +161,11 @@ api.add_resource(StockControl, "/stock/stock/<string:code>", "/stock/stock")
 from route.control.novel.name_control import NameControl, ZiControl
 api.add_resource(ZiControl, "/novel/zi")
 api.add_resource(NameControl, "/novel/name")
+
+
+# 学习部分
+from route.control.study.english_sentence_control import EnglishSentenceControl
+api.add_resource(EnglishSentenceControl, "/study/english_sentence")
 
 
 #  定时任务部分

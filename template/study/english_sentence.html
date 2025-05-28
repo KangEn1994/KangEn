@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>英语句子抽取</title>
+    <script type="text/javascript" src="/static/js/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        button { margin-right: 10px; padding: 8px 16px; }
+        #result { margin-top: 20px; font-size: 18px; }
+        .area-block { margin-top: 20px; }
+        #english_area { display: none; color: blue; width: 100%; height: 60px; margin-top: 10px; font-size: 16px; }
+        #chinese_area { color: green; }
+        #input_area { width: 100%; height: 60px; margin-top: 10px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <h2>英语句子抽取</h2>
+    <p>当前可抽取句子总数：<span id="row_count" >{{ row_count - 1 }}</span></p>
+    <button id="randomBtn" onclick="get_sentence()">随机抽取一句</button>
+    <button id="showEnglishBtn" type="button" onclick="show()">显示英文内容</button>
+    <button id="playMp3Btn" type="button">播放音频</button>
+    <div class="area-block" id="chinese_area"></div>
+    <textarea class="area-block" id="english_area"></textarea>
+    <textarea class="area-block" id="input_area" placeholder="请在这里输入你的英文翻译"></textarea>
+    <div id="result"></div>
+    <audio id="audio_player" src="" style="display:none;"></audio>
+
+
+    <script>
+        function get_sentence(way) {
+            var row_count = {{ row_count }};
+            $('#english_area').hide();
+            $("#input_area").val('');
+
+            var data ={
+                row_count: row_count 
+            }
+            $.post("/study/english_sentence", data, function(result, state){
+                $('#chinese_area').text(result.chinese);
+                $('#english_area').text(result.english);
+                // 假设 result.mp3_url 是后端返回的音频地址
+                if(result.path){
+                    $('#audio_player').attr('src', '/static/' + result.path);
+                }
+            })
+        }
+
+        function show() {
+            $('#english_area').show();
+        };
+
+        // 回车键触发show方法
+        $('#input_area').on('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if ($('#english_area').is(':visible')) {
+                    // 如果英文区域已展示，则播放音频
+                    var audio = document.getElementById('audio_player');
+                    if(audio.src){
+                        audio.play();
+                    } else {
+                        alert('暂无音频可播放');
+                    }
+                } else {
+                    show();
+                }
+            }
+            // Command+Enter 触发 get_sentence
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                e.preventDefault();
+                get_sentence();
+            }
+        });
+
+        // 播放音频按钮
+        $('#playMp3Btn').on('click', function() {
+            var audio = document.getElementById('audio_player');
+            if(audio.src){
+                audio.play();
+            } else {
+                alert('暂无音频可播放');
+            }
+        });
+    </script>
+</body>
+</html>
