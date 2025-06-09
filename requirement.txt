@@ -9,4 +9,6 @@ tushare==1.4.19
 lark_oapi
 pycups
 reportlab
-gTTS==2.5.4
+torch 
+torchaudio
+omegaconf
