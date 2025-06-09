@@ -10,7 +10,7 @@ import requests
 from conf.conf import FEISHU_APP_ID, FEISHU_APP_SECRET
 
 client = lark.Client.builder().app_id(FEISHU_APP_ID).app_secret(FEISHU_APP_SECRET).enable_set_token(True).build()
-
+SENTENCES = []
 
 class FeishuService:
 
@@ -159,6 +159,40 @@ class FeishuService:
             return None
         # 返回区域内的值
         return data["data"]["valueRange"]["values"]
+    
+    @staticmethod
+    def get_all_sentences(excel_token, sheet_id):
+        """
+        获取所有句子
+        :param excel_token: 表格token
+        :param sheet_id: sheet页id
+        :return: 所有句子
+        """
+        if not SENTENCES:
+            start, end = 2, 10000
+            while start < end:
+                mid = (start + end) // 2
+                area = f"B{mid}:C{mid}"
+                values = FeishuService.read_feishu_excel_sheet(excel_token, sheet_id, area)
+                # print(values)
+                if values[0][0] and len(values[0][0]) > 0:
+                    start = mid + 1
+                else:
+                    end = mid
+            row_count = start - 1 
+
+            # 获取表格中的数据
+            values = FeishuService.read_feishu_excel_sheet(excel_token, sheet_id, f"B2:E{row_count}")
+            for index, each in enumerate(values):
+                SENTENCES.append({
+                    "sentence": each[0],
+                    "translation": each[1],
+                    "wrong_times": each[2],
+                    "last_practice_time": each[3],
+                    "id": index + 2
+                })
+            
+        return SENTENCES
 
 
 

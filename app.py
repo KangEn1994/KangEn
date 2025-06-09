@@ -176,10 +176,14 @@ class Config(object):
 scheduler = APScheduler()
 
 
-@scheduler.task('cron', id='task1', day='*', hour='03', minute='00', second='00')
-def task1():  # 每天凌晨3点跑一次
-    pass
-
+@scheduler.task('cron', id='task1', day='*', hour='00', minute='00', second='00')
+def task1():  # 每天凌晨0点跑一次
+    # 每天更新一下SENTENCES
+    from route.service.feishu_service import FeishuService, SENTENCES
+    from route.control.study.english_sentence_control import EXCEL_TOKEN, SHEET_ID
+    SENTENCES.clear()
+    FeishuService.get_all_sentences(EXCEL_TOKEN, SHEET_ID)
+    
 
 @scheduler.task('cron', id='task2', day='*', hour='20', minute='00', second='00')
 def task2():  # 每天晚上8点跑一次
