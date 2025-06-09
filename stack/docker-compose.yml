@@ -1,12 +1,18 @@
 version: "3.2"
 services:
   kangen:
-    image: kangen/kangen
+    image: kangen/kangen:20250610_0122
     environment:
       - TZ=Asia/Shanghai
     ports:
       - 11016:9999
     volumes:
       - ./log:/app/log
+      - ../conf:/app/conf
+      - ../app.py:/app/app.py
+      - ../route:/app/route
+      - ../scheduler:/app/scheduler
+      - ../templates:/app/templates
+      - ../tools:/app/tools
 
 

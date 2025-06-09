@@ -8,10 +8,8 @@ mkdir  app/log    &&
 cp -r ../template  app/template    &&
 cp -r ../tools  app/tools    &&
 cp -r ../route  app/route    &&
-cp -r ../other  app/other    &&
+cp -r ../doc  app/doc    &&
+cp -r ../scheduler  app/scheduler    &&
 cp ../requirement.txt app/requirement.txt  &&
 docker build -t kangen/kangen:$tag .  &&
 rm -rf app
-
-
-
