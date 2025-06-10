@@ -183,11 +183,19 @@ def task1():  # 每天凌晨0点跑一次
     from route.control.study.english_sentence_control import EXCEL_TOKEN, SHEET_ID
     SENTENCES.clear()
     FeishuService.get_all_sentences(EXCEL_TOKEN, SHEET_ID)
-    
 
-@scheduler.task('cron', id='task2', day='*', hour='20', minute='00', second='00')
-def task2():  # 每天晚上8点跑一次
-    pass
+
+@scheduler.task('cron', id='task2', day='*', hour='08', minute='00', second='00')
+def task2():  # 每天早上8点跑一次
+    from scheduler.scheduler_one import run
+    run()
+
+@app.route('/test/print', methods=['GET'])
+def test1111():
+    from route.service.print_service import PrintService
+    PrintService.print_daily_english_study()
+    return "打印任务已提交"
+
 
 
 @scheduler.task('cron', id='task3', day='*', hour='13', minute='00', second='00')
